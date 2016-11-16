@@ -5,11 +5,11 @@ usage() {
 Agent which will watch for Postgres commits and send a message to SQS upon new commits
 
 Usage:
-  $0 <REPO_DIR> <QUEUE_URL> <PULLING_TIMEOUT>
+  $0 <REPO_DIR> <QUEUE_URL> <POLLING_TIMEOUT>
 
 <REPO_DIR>: Auto created if not already
 <QUEUE_URL>: URL which points the the SQS queue
-<PULLING_TIMEOUT>: Optional. Default to 5 seconds
+<POLLING_TIMEOUT>: Optional. Default to 5 seconds
 EOF
 
   exit 1
@@ -19,8 +19,8 @@ LOGFILE=/var/log/git-watcher-agent.log
 
 REPO_DIR=$1
 QUEUE_URL=$2
-DEFAULT_PULLING_TIMEOUT=5
-PULLING_TIMEOUT=${3:-$DEFAULT_PULLING_TIMEOUT}
+DEFAULT_POLLING_TIMEOUT=5
+POLLING_TIMEOUT=${3:-$DEFAULT_POLLING_TIMEOUT}
 
 if [ "x$REPO_DIR" == "x" ]; then
   echo
@@ -86,8 +86,8 @@ main () {
             handle_commits $COMMITS
         fi
     
-        echo_log "Sleeping for $PULLING_TIMEOUT seconds..."
-        sleep $PULLING_TIMEOUT
+        echo_log "Sleeping for $POLLING_TIMEOUT seconds..."
+        sleep $POLLING_TIMEOUT
     done
 }
 
@@ -95,21 +95,5 @@ echo_log "Starting git-watcher-agent" >> $LOGFILE
 
 main >> $LOGFILE 2>&1
 
-# create array of currently fetched commits
-#original=($(git log --pretty=oneline | awk '{print $1}'))
-
-# do a fetch and add new commits to array
-#updated=($(git fetch --all && git log --pretty=oneline | awk '{print $1}'))
-
-#arr2=("${arr[@]}" 'newitem')
-
-#echo ${#arr[@]}
-#echo ${#arr2[@]}
-#for item in ${arr2[*]}
-#do
-#    printf "%s\n" $item
-#done
-
-#echo ${Array1[@]} ${Array2[@]} | tr ' ' '\n' | sort | uniq -u
-
-#for x in $arr; do echo $x; done;
+# This should never be hit
+exit 1

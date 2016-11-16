@@ -20,3 +20,11 @@ resource "aws_key_pair" "ssh_key" {
     create_before_destroy = true
   }
 }
+
+data "template_file" "bootstrap-template" {
+  template = "${file("${path.module}/scripts/bootstrap.tpl")}"
+
+  vars {
+    region = "${var.region}"
+  }
+}

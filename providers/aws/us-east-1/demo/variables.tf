@@ -78,3 +78,34 @@ variable "watcher_root_block_device_volume_type" {}
 variable "watcher_root_block_device_volume_size" {}
 
 variable "watcher_root_block_device_delete_on_termination" {}
+
+/* Postgres Builder */
+variable "builder_ami_id" {
+  default = ""
+}
+
+variable "builder_tenancy" {}
+
+variable "builder_ebs_optimized" {}
+
+variable "builder_disable_api_termination" {}
+
+variable "builder_instance_type" {}
+
+variable "builder_enable_detailed_monitoring" {}
+
+variable "builder_associate_public_ip" {}
+
+#variable "builder_health_check_target" {}
+
+variable "builder_desired_instance_count" {}
+
+variable "builder_min_instance_count" {}
+
+variable "builder_max_instance_count" {}
+
+variable "builder_root_block_device_volume_type" {}
+
+variable "builder_root_block_device_volume_size" {}
+
+variable "builder_root_block_device_delete_on_termination" {}

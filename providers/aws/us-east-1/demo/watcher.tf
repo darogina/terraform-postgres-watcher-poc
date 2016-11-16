@@ -1,12 +1,12 @@
 resource "aws_s3_bucket_object" "watcher-agent" {
   bucket = "${aws_s3_bucket.postgres-scripts.id}"
   key    = "git-watcher-agent.sh"
-  source = "scripts/git-watcher-agent.sh"
-  etag   = "${md5(file("scripts/git-watcher-agent.sh"))}"
+  source = "scripts/watcher/git-watcher-agent.sh"
+  etag   = "${md5(file("scripts/watcher/git-watcher-agent.sh"))}"
 }
 
 data "template_file" "git-watcher-agent-service-template" {
-  template = "${file("${path.module}/scripts/git-watcher-agent.service.tpl")}"
+  template = "${file("${path.module}/scripts/watcher/git-watcher-agent.service.tpl")}"
 
   vars {
     agent_key = "${aws_s3_bucket_object.watcher-agent.id}"
@@ -22,7 +22,7 @@ resource "aws_s3_bucket_object" "watcher-agent-service" {
 
 # Create an Instance Profile so that the Git Watcher EC2 instances can communicate with SQS
 resource "aws_iam_instance_profile" "watcher-instance-profile" {
-  name       = "${format("%s_%s", replace(var.project, "_", "-"), replace(var.environment, "_", "-"))}_PostgresGitWatcher_InstanceProfile"
+  name       = "${format("%s_%s", replace(var.project, "_", "-"), replace(var.environment, "_", "-"))}_PgGitWatcher_InstanceProfile"
   roles      = ["${aws_iam_role.postgres-builder-role.name}"]
   depends_on = ["aws_iam_role.postgres-builder-role"]
 
@@ -35,16 +35,8 @@ resource "aws_iam_instance_profile" "watcher-instance-profile" {
   }
 }
 
-data "template_file" "bootstrap-template" {
-  template = "${file("${path.module}/scripts/bootstrap.tpl")}"
-
-  vars {
-    region = "${var.region}"
-  }
-}
-
 data "template_file" "watcher-bootstrap-template" {
-  template = "${file("${path.module}/scripts/git-watcher-bootstrap.tpl")}"
+  template = "${file("${path.module}/scripts/watcher/git-watcher-bootstrap.tpl")}"
 
   vars {
     bucket_name = "${aws_s3_bucket.postgres-scripts.id}"
