@@ -4,7 +4,8 @@
 Description=Postgres Builder Agent
 
 [Service]
-ExecStart=/opt/pg-builder/${agent_key} /opt/pg-builder/repo ${sqs_url}
+User=postgres
+ExecStart=${working_dir}/${agent_key} ${working_dir}/repo ${log_file} ${sqs_url}
 Restart=always
 
 [Install]

@@ -9,8 +9,10 @@ data "template_file" "pg-builder-agent-service-template" {
   template = "${file("${path.module}/scripts/builder/pg-builder-agent.service.tpl")}"
 
   vars {
-    agent_key = "${aws_s3_bucket_object.builder-agent.id}"
-    sqs_url   = "${aws_sqs_queue.git-commit-queue.id}"
+    working_dir = "/opt/pg-builder"
+    agent_key   = "${aws_s3_bucket_object.builder-agent.id}"
+    sqs_url     = "${aws_sqs_queue.git-commit-queue.id}"
+    log_file     = "/var/log/pg-builder-agent.log"
   }
 }
 
@@ -40,9 +42,12 @@ data "template_file" "builder-bootstrap-template" {
 
   vars {
     bucket_name = "${aws_s3_bucket.postgres-scripts.id}"
+    region      = "${var.region}"
     agent_key   = "${aws_s3_bucket_object.builder-agent.id}"
+    working_dir = "/opt/pg-builder"
     service_key = "${aws_s3_bucket_object.builder-agent-service.id}"
     sqs_url     = "${aws_sqs_queue.git-commit-queue.id}"
+    log_file    = "/var/log/pg-builder-agent.log"
   }
 }
 
