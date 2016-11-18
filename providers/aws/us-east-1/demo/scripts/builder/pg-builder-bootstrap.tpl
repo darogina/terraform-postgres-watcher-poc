@@ -2,7 +2,7 @@
 set -e
 
 echo "Installing Postgres build dependencies..."
-yum install -y bison-devel readline-devel zlib-devel openssl-devel wget
+yum -y install bison-devel readline-devel zlib-devel openssl-devel wget rpm-build spectool perl-ExtUtils-Embed perl-devel python-devel tcl-devel e2fsprogs-devel libxml2-devel libxslt-devel pam-devel systemtap-sdt-devel libuuid-devel openldap-devel systemd-devel
 yum groupinstall -y 'Development Tools'
 
 echo "Installing JQ for json parsing..."
