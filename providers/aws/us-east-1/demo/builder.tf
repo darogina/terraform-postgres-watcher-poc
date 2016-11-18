@@ -1,3 +1,4 @@
+# Upload builder agent to S3
 resource "aws_s3_bucket_object" "builder-agent" {
   bucket = "${aws_s3_bucket.postgres-scripts.id}"
   key    = "pg-builder-agent.sh"
@@ -5,6 +6,7 @@ resource "aws_s3_bucket_object" "builder-agent" {
   etag   = "${md5(file("scripts/builder/pg-builder-agent.sh"))}"
 }
 
+# Systemd service for the builder agent
 data "template_file" "pg-builder-agent-service-template" {
   template = "${file("${path.module}/scripts/builder/pg-builder-agent.service.tpl")}"
 
@@ -12,10 +14,11 @@ data "template_file" "pg-builder-agent-service-template" {
     working_dir = "/opt/pg-builder"
     agent_key   = "${aws_s3_bucket_object.builder-agent.id}"
     sqs_url     = "${aws_sqs_queue.git-commit-queue.id}"
-    log_file     = "/var/log/pg-builder-agent.log"
+    log_file    = "/var/log/pg-builder-agent.log"
   }
 }
 
+# Upload Systemd service to S3
 resource "aws_s3_bucket_object" "builder-agent-service" {
   bucket  = "${aws_s3_bucket.postgres-scripts.id}"
   key     = "pg-builder-agent.service"
@@ -37,6 +40,7 @@ resource "aws_iam_instance_profile" "builder-instance-profile" {
   }
 }
 
+# Bootstrap script for builder agent instance
 data "template_file" "builder-bootstrap-template" {
   template = "${file("${path.module}/scripts/builder/pg-builder-bootstrap.tpl")}"
 
@@ -51,6 +55,7 @@ data "template_file" "builder-bootstrap-template" {
   }
 }
 
+# Combine global bootstrap and builder agent bootstrap scripts
 data "template_cloudinit_config" "builder-cloudinit-config" {
   gzip          = true
   base64_encode = false
@@ -66,6 +71,7 @@ data "template_cloudinit_config" "builder-cloudinit-config" {
   }
 }
 
+# Launch Configuration for builder agent instance
 resource "aws_launch_configuration" "builder-launch-configuration" {
   name_prefix                 = "${format("%s_%s", replace(var.project, "_", "-"), replace(var.environment, "_", "-"))}_PgBuilder"
   image_id                    = "${var.builder_ami_id}"
@@ -88,6 +94,7 @@ resource "aws_launch_configuration" "builder-launch-configuration" {
   depends_on = ["aws_iam_instance_profile.builder-instance-profile"]
 }
 
+# Auto Scaling Group for builder agent instances
 resource "aws_autoscaling_group" "builder-asg" {
   name                = "${format("%s_%s", replace(var.project, "_", "-"), replace(var.environment, "_", "-"))}_PgBuilder"
   vpc_zone_identifier = ["${module.network.public_subnet_ids}"]

@@ -1,3 +1,4 @@
+# Upload watcher agent to S3
 resource "aws_s3_bucket_object" "watcher-agent" {
   bucket = "${aws_s3_bucket.postgres-scripts.id}"
   key    = "git-watcher-agent.sh"
@@ -5,6 +6,7 @@ resource "aws_s3_bucket_object" "watcher-agent" {
   etag   = "${md5(file("scripts/watcher/git-watcher-agent.sh"))}"
 }
 
+# Systemd service for the watcher agent
 data "template_file" "git-watcher-agent-service-template" {
   template = "${file("${path.module}/scripts/watcher/git-watcher-agent.service.tpl")}"
 
@@ -14,6 +16,7 @@ data "template_file" "git-watcher-agent-service-template" {
   }
 }
 
+# Upload Systemd service to S3
 resource "aws_s3_bucket_object" "watcher-agent-service" {
   bucket  = "${aws_s3_bucket.postgres-scripts.id}"
   key     = "git-watcher-agent.service"
@@ -35,6 +38,7 @@ resource "aws_iam_instance_profile" "watcher-instance-profile" {
   }
 }
 
+# Bootstrap script for watcher agent instance
 data "template_file" "watcher-bootstrap-template" {
   template = "${file("${path.module}/scripts/watcher/git-watcher-bootstrap.tpl")}"
 
@@ -46,6 +50,7 @@ data "template_file" "watcher-bootstrap-template" {
   }
 }
 
+# Combine global bootstrap and watcher agent bootstrap scripts
 data "template_cloudinit_config" "watcher-cloudinit-config" {
   gzip          = true
   base64_encode = false
@@ -61,6 +66,7 @@ data "template_cloudinit_config" "watcher-cloudinit-config" {
   }
 }
 
+# Launch Configuration for watcher agent instance
 resource "aws_launch_configuration" "watcher-launch-configuration" {
   name_prefix                 = "${format("%s_%s", replace(var.project, "_", "-"), replace(var.environment, "_", "-"))}_GitWatcher"
   image_id                    = "${var.watcher_ami_id}"
@@ -83,6 +89,7 @@ resource "aws_launch_configuration" "watcher-launch-configuration" {
   depends_on = ["aws_iam_instance_profile.watcher-instance-profile"]
 }
 
+# Auto Scaling Group for watcher agent instances 
 resource "aws_autoscaling_group" "watcher-asg" {
   name                = "${format("%s_%s", replace(var.project, "_", "-"), replace(var.environment, "_", "-"))}_GitWatcher"
   vpc_zone_identifier = ["${module.network.public_subnet_ids}"]
