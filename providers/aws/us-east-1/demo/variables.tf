@@ -1,12 +1,12 @@
 # access_key and secret_key by default are read from '~/.aws/credentials'.  Do not check-in this file with keys hardcoded.
 
-/*variable "access_key" {
+variable "access_key" {
   description = "AWS access key"
 }
 
 variable "secret_key" {
   description = "AWS secret access key"
-}*/
+}
 
 variable "project" {}
 

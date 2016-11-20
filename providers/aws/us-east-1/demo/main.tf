@@ -1,14 +1,12 @@
 provider "aws" {
   # For different ways to provide authentication credentials see https://www.terraform.io/docs/providers/aws/#authentication
 
-  # By default this is reading from your shared credentials file '~/.aws/credentials'
+  access_key = "${var.access_key}"
 
-  # access_key = "${var.access_key}"
-
-  # secret_key = "${var.secret_key}"
+  secret_key = "${var.secret_key}"
 
   # Read credentials from profile defined in '~/.aws.credentials'
-  profile = "rogina"
+  # profile = "rogina"
   region  = "${var.region}"
 }
 
