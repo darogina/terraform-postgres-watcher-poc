@@ -55,6 +55,7 @@ handle_commits () {
 }
 
 main () {
+
     # Setup the git repo clone
     mkdir -p $REPO_DIR
     cd $REPO_DIR
@@ -67,7 +68,6 @@ main () {
     
     while true
     do
-        echo_log 'Starting execution'
         # Get current HEAD hash
         CURRENT_HEAD=$(git rev-parse HEAD)
     

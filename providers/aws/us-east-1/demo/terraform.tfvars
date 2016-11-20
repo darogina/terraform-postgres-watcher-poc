@@ -13,6 +13,7 @@ vpc_enable_dns_support = "true"
 
 /* Instances */
 ssh_public_key_path = "../../../../setup/postgres-demo.pub"
+ssh_cidrs = ["0.0.0.0/0"]
 
 # Git Watcher
 watcher_ami_id = "ami-b63769a1"

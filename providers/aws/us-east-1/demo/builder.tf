@@ -79,18 +79,21 @@ resource "aws_launch_configuration" "builder-launch-configuration" {
   associate_public_ip_address = "${var.builder_associate_public_ip}"
   key_name                    = "${aws_key_pair.ssh_key.key_name}"
 
-  #security_groups             = ["${var.security_group_ids}"]
+  security_groups = ["${aws_security_group.default.id}"]
 
   iam_instance_profile = "${aws_iam_instance_profile.builder-instance-profile.name}"
   user_data            = "${data.template_cloudinit_config.builder-cloudinit-config.rendered}"
+
   root_block_device {
     volume_type           = "${var.builder_root_block_device_volume_type}"
     volume_size           = "${var.builder_root_block_device_volume_size}"
     delete_on_termination = "${var.builder_root_block_device_delete_on_termination}"
   }
+
   lifecycle {
     create_before_destroy = true
   }
+
   depends_on = ["aws_iam_instance_profile.builder-instance-profile"]
 }
 

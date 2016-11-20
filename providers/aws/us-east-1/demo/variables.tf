@@ -48,6 +48,10 @@ variable "vpc_enable_dns_support" {
 /* Instances */
 variable "ssh_public_key_path" {}
 
+variable "ssh_cidrs" {
+  type = "list"
+}
+
 /* Git Watcher */
 variable "watcher_ami_id" {
   default = ""

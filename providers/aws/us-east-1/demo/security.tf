@@ -51,3 +51,37 @@ EOF
     create_before_destroy = true
   }
 }
+
+resource "aws_security_group" "default" {
+  name_prefix = "${format("%s_%s", replace(var.project, "_", "-"), replace(var.environment, "_", "-"))}_"
+  description = "Security group for the Postgres build system"
+  vpc_id      = "${module.network.vpc_id}"
+
+  ingress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    self      = true
+  }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["${var.ssh_cidrs}"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags {
+    Name        = "${format("%s_%s_%s", replace(var.project, "_", "-"), replace(var.environment, "_", "-"))}"
+    Project     = "${var.project}"
+    Environment = "${var.environment}"
+    created_by  = "terraform"
+  }
+}
