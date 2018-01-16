@@ -1,4 +1,4 @@
-PostgreSQL Git Watcher & Builder
+PostgreSQL Git Watcher & Builder Proof of Concept
 ====================
 This project stands up a PostgreSQL build system leveraging Terraform, PostgreSQL PGDG RPM Spec, and GitHub PostgreSQL Mirror.  Terraform is used to create two RHEL 7 environments, one which listens for all new commits to the Github PostgreSQL mirror and another to build the corresponding commits.  Both environments can be configured to scale to accomidate a large backlog of builds.  Amazon SQS is used to facilitate communication between the two enviornments.  Upon successful build and execution of the full Postgres regression suite, RPMs will be attempted to be built for the new source.
 
